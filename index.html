@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Liên hệ hỗ trợ </title>
+  <title>Liên hệ hỗ trợ</title>
   <style>
     :root{--bg:#0b0b0d;--card:#0f1724;--accent:#00d67a;--muted:#9aa3b2}
     body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; background:var(--bg); margin:0; padding:28px; color:#e6eef6}
@@ -32,39 +32,27 @@
 <body>
   <div class="wrap card">
     <h1>Chat trực tiếp trên Session</h1>
-    <p class="lead">Bấm vào nút "Mở Session" để mở ứng dụng Session và bắt đầu chat với tài khoản 059615dd19ba82e9c9d43271f72275011b181e17cb236605bb292b9f74a1c5a316.</p>
+    <p class="lead">Sao chép ID sau đó bấm vào nút "Mở Session" để mở ứng dụng Session và bắt đầu chat với id đó - tài khoản hỗ trợ.</p>
 
     <a class="appstore" href="https://apps.apple.com/vn/app/session-anonymous-messenger/id1470168868?l=vi" target="_blank" rel="noopener">Mở trang App Store — Session</a>
 
     <div style="display:grid;grid-template-columns:1fr 180px;gap:16px;margin-top:16px;align-items:start">
       <div>
-        <label>Tên người hỗ trợ</label>
+        <label>Tên hiển thị</label>
         <div id="displayName" >taad</div>
 
         <label style="margin-top:10px">Session ID (đã dán sẵn)</label>
         <div class="idbox" id="idBox">059615dd19ba82e9c9d43271f72275011b181e17cb236605bb292b9f74a1c5a316</div>
 
-        <label style="margin-top:10px">Tin nhắn mặc định (Không bắt buộc)</label>
-        <textarea id="note" placeholder="Ví dụ: Chào, mình muốn trao đổi về..."></textarea>
-
         <div class="controls">
-          <button id="openBtn">Mở Session</button>
+          <button id="openBtn">Tải Session</button>
           <button id="copyBtn" class="ghost">Sao chép ID</button>
           <button id="shareBtn" class="ghost">Sao chép Link</button>
         </div>
 
-        <p class="muted" style="margin-top:10px">Ghi chú: Trên thiết bị có cài Session, bấm vào sẽ mở ứng dụng. Nếu không mở được, hãy cài Session từ App Store.</p>
+        <p class="muted" style="margin-top:10px">Ghi chú: Cài Session từ App Store.</p>
+	<p class="muted" style="margin-top:10px">Session là ứng dụng nhắn tin tập trung vào quyền riêng tư.</p>
       </div>
-
-      <div style="text-align:center">
-        <div class="qr" id="qrArea">QR</div>
-        <p class="small muted" style="margin-top:8px">Quét QR để mở Session trên thiết bị di động</p>
-      </div>
-    </div>
-
-    <footer>
-      <strong>Lưu ý bảo mật:</strong> Session là ứng dụng nhắn tin tập trung vào quyền riêng tư.
-    </footer>
   </div>
 
   <script>
@@ -95,7 +83,7 @@
     }
 
     openBtn.addEventListener('click', ()=>{
-      const link = makeSessionLink();
+      const link = 'https://apps.apple.com/vn/app/session-anonymous-messenger/id1470168868?l=vi';
       // Thử mở deep link
       window.location.href = link;
       // Nếu không mở (trình duyệt chặn), người dùng có thể bật lại hoặc cài app
@@ -117,7 +105,7 @@
     });
 
     shareBtn.addEventListener('click', async ()=>{
-      const link = makeSessionLink();
+      const link = 'https://apps.apple.com/vn/app/session-anonymous-messenger/id1470168868?l=vi';
       try{
         await navigator.clipboard.writeText(link);
         alert('Đã sao chép link: ' + link);
@@ -125,22 +113,6 @@
         prompt('Sao chép thủ công link:', link);
       }
     });
-
-    // Tạo QR bằng Google Chart API nếu người dùng online
-    function updateQR(){
-      const link = makeSessionLink();
-      const enc = encodeURIComponent(link);
-      const qrURL = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + enc;
-      qrArea.style.backgroundImage = 'url(\"' + qrURL + '\")';
-      qrArea.style.backgroundSize = 'cover';
-      qrArea.textContent = '';
-    }
-
-    note.addEventListener('input', updateQR);
-    displayName.addEventListener('input', updateQR);
-
-    // khởi tạo
-    updateQR();
   </script>
 </body>
 </html>
