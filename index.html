@@ -223,9 +223,9 @@
       setTimeout(()=>{
         document.removeEventListener('visibilitychange', onVisibilityChange);
         const elapsed = Date.now() - start;
-        if (!appOpened && elapsed < 5000) {
+        if (!appOpened && elapsed < 10000) {
           const storeLink = isAndroid ? ANDROID_PLAYSTORE_LINK : IOS_APPSTORE_LINK;
-          showConfirm("Bạn chưa cài Session, mở cửa hàng để tải?", (ok)=>{
+          showConfirm("Bạn chưa cài Session, mở Appstore để tải?", (ok)=>{
             if(ok) window.location.href = storeLink;
           });
         }
