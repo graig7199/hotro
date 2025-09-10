@@ -219,17 +219,6 @@
         window.open(IOS_APPSTORE_LINK, '_blank');
         appOpened = true;
       }
-
-      setTimeout(()=>{
-        document.removeEventListener('visibilitychange', onVisibilityChange);
-        const elapsed = Date.now() - start;
-        if (!appOpened && elapsed < 10000) {
-          const storeLink = isAndroid ? ANDROID_PLAYSTORE_LINK : IOS_APPSTORE_LINK;
-          showConfirm("Bạn chưa cài Session, mở Appstore để tải?", (ok)=>{
-            if(ok) window.location.href = storeLink;
-          });
-        }
-      }, 1300);
     }
 
     openBtn.addEventListener('click', tryOpenApp);
