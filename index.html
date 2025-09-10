@@ -28,18 +28,34 @@
     p.lead{margin:0 0 12px;color:var(--muted);text-align:center}
     label{font-size:13px;color:var(--muted);display:block;margin:10px 0 6px;text-align:center}
     .controls{
-      display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap;
+      display:flex;
+      gap:8px;
+      margin-top:12px;
+      justify-content:center;
+      flex-wrap:wrap;
     }
     button{
-      background:var(--accent);color:#021014;padding:10px 12px;border-radius:10px;
-      border:0;cursor:pointer;font-weight:600;flex:1;min-width:120px;
+      background:var(--accent);
+      color:#021014;
+      padding:10px 12px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      font-weight:600;
+      flex:1;
+      min-width:120px;
     }
     button.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,214,122,0.14)}
     .muted{color:var(--muted);font-size:13px;text-align:center}
     .idbox{font-family:monospace;background:rgba(255,255,255,0.02);padding:14px;border-radius:10px;margin-top:12px;word-break:break-all;text-align:center}
-    @media (max-width:480px){h1{font-size:18px}.idbox{font-size:13px}button{flex:100%}}
+    a.appstore{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02);color:var(--accent);text-decoration:none;text-align:center}
+    @media (max-width: 480px) {
+      h1 { font-size: 18px; }
+      .idbox { font-size: 13px; }
+      button { flex: 100%; }
+    }
 
-    /* Popup thông báo dạng toast cho mobile */
+    /* Popup toast */
     .popup {
       position: fixed;
       bottom: -60px;
@@ -59,7 +75,7 @@
     }
     .popup.show { bottom: 0; }
 
-    /* Popup xác nhận cho mobile */
+    /* Confirm mobile */
     .confirm-overlay {
       position: fixed;
       top:0;left:0;right:0;bottom:0;
@@ -108,14 +124,8 @@
       cursor:pointer;
       border:0;
     }
-    .confirm-actions .yes {
-      background:var(--accent);
-      color:#021014;
-    }
-    .confirm-actions .no {
-      background:#333;
-      color:#fff;
-    }
+    .confirm-actions .yes { background:var(--accent);color:#021014; }
+    .confirm-actions .no { background:#333;color:#fff; }
   </style>
 </head>
 <body>
@@ -131,9 +141,8 @@
       <div class="idbox" id="idBox">057385c17764d80dfe74fa38dceae2143163db646e62ad00c7bee9847350969878</div>
 
       <div class="controls">
-        <button id="openBtn">Tải Session</button>
+        <button id="openBtn">Mở Session</button>
         <button id="copyBtn" class="ghost">Sao chép ID</button>
-        <button id="shareBtn" class="ghost">Sao chép Link</button>
       </div>
 
       <p class="muted" style="margin-top:10px">Ghi chú: Cài Session từ App Store.</p>
@@ -141,11 +150,9 @@
     </div>
   </div>
 
-  <!-- Popup -->
+  <!-- Popup + Confirm -->
   <div id="popup" class="popup"></div>
-
-  <!-- Popup xác nhận -->
-  <div id="confirmBox" class="confirm-overlay">
+  <div id="confirmOverlay" class="confirm-overlay">
     <div class="confirm-box">
       <div class="confirm-msg" id="confirmMsg"></div>
       <div class="confirm-actions">
@@ -159,71 +166,50 @@
     const id = '057385c17764d80dfe74fa38dceae2143163db646e62ad00c7bee9847350969878';
     const openBtn = document.getElementById('openBtn');
     const copyBtn = document.getElementById('copyBtn');
-    const shareBtn = document.getElementById('shareBtn');
+
     const popup = document.getElementById('popup');
-
-    // confirm popup
-    const confirmOverlay = document.getElementById('confirmBox');
+    const confirmOverlay = document.getElementById('confirmOverlay');
     const confirmMsg = document.getElementById('confirmMsg');
-    const yesBtn = confirmOverlay.querySelector('.yes');
-    const noBtn = confirmOverlay.querySelector('.no');
-    let confirmCallback = null;
+    const confirmYes = confirmOverlay.querySelector('.yes');
+    const confirmNo = confirmOverlay.querySelector('.no');
 
-    function makeWebFallback() {
-      return 'https://apps.apple.com/vn/app/session-anonymous-messenger/id1470168868?l=vi';
-    }
-
-    function showPopup(msg) {
+    function showPopup(msg){
       popup.textContent = msg;
       popup.classList.add('show');
-      setTimeout(()=> popup.classList.remove('show'), 3000);
+      setTimeout(()=>popup.classList.remove('show'), 3000);
     }
 
-    function showConfirm(msg, callback) {
+    function showConfirm(msg, callback){
       confirmMsg.textContent = msg;
       confirmOverlay.classList.add('show');
-      confirmCallback = callback;
+      confirmYes.onclick = ()=>{confirmOverlay.classList.remove('show');callback(true)};
+      confirmNo.onclick = ()=>{confirmOverlay.classList.remove('show');callback(false)};
     }
 
-    yesBtn.addEventListener('click', ()=>{
-      confirmOverlay.classList.remove('show');
-      if (confirmCallback) confirmCallback(true);
-    });
-    noBtn.addEventListener('click', ()=>{
-      confirmOverlay.classList.remove('show');
-      if (confirmCallback) confirmCallback(false);
-    });
-
     openBtn.addEventListener('click', ()=>{
-      const link = 'https://apps.apple.com/vn/app/session-anonymous-messenger/id1470168868?l=vi';
-      window.location.href = link;
+      const sessionLink = "session://"; 
+      const appStoreLink = "itms-apps://apps.apple.com/vn/app/session-anonymous-messenger/id1470168868";
+
+      // Thử mở app Session
+      window.location.href = sessionLink;
+
+      // Nếu không mở được, hỏi sau 1 giây
       setTimeout(()=>{
-        showConfirm('Nếu thiết bị không mở app Session, bạn muốn mở trang App Store để cài đặt không?', (ok)=>{
-          if(ok){
-            window.open(makeWebFallback(), '_blank');
-          }
+        showConfirm("Bạn chưa cài Session, mở App Store để tải?", (ok)=>{
+          if(ok) window.location.href = appStoreLink;
         });
-      }, 800);
+      }, 1000);
     });
 
     copyBtn.addEventListener('click', async ()=>{
       try{
         await navigator.clipboard.writeText(id);
-        showPopup('Đã sao chép ID!');
+        showPopup('Đã sao chép ID');
       }catch(e){
-        prompt('Sao chép thủ công ID:', id);
+        showPopup('Không thể sao chép, hãy copy thủ công');
       }
     });
-
-    shareBtn.addEventListener('click', async ()=>{
-      const link = 'https://apps.apple.com/vn/app/session-anonymous-messenger/id1470168868?l=vi';
-      try{
-        await navigator.clipboard.writeText(link);
-        showPopup('Đã sao chép link!');
-      }catch(e){
-        prompt('Sao chép thủ công link:', link);
-      }
-    });
+    
   </script>
 </body>
 </html>
